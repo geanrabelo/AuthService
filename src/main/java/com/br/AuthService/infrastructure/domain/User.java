@@ -34,6 +34,12 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
+    public User(String username, String password, Roles roles){
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if(this.roles == Roles.ADMIN) return List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("TECHNICIAN"), new SimpleGrantedAuthority("AUDITOR"));
