@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.br.AuthService.infrastructure.domain.User;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -14,16 +13,17 @@ import java.time.ZoneOffset;
 @Service
 public class TokenService {
 
-    @Value("{api.security.secret}")
+    @Value("${api.security.secret}")
     private String secret;
 
-    @Bean
     public String generateToken(User user){
         try{
+
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
-                    .withIssuer("auth")
-                    .withSubject(user.getUsername())
+                    .withIssuer("auth-service")
+                    .withSubject(user.getLogin())
+                    .withClaim("roles", user.getRoles().name())
                     .withExpiresAt(generateExpiresAt())
                     .sign(algorithm);
         }catch (Exception e){
@@ -31,12 +31,11 @@ public class TokenService {
         }
     }
 
-    @Bean
     public String validateToken(String token){
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
-                    .withIssuer("auth")
+                    .withIssuer("auth-service")
                     .build()
                     .verify(token)
                     .getSubject();

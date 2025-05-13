@@ -4,4 +4,5 @@ public enum Roles {
     ADMIN,
     TECHNICIAN,
     AUDITOR
+
 }

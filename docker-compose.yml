@@ -1,14 +1,24 @@
 services:
-  postgres:
+  postgres-auth:
     image: postgres
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: "productManager"
+      POSTGRES_DB: "users"
     networks:
-      - networkProduct
+      - networkIot
+  postgres-iot:
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "iot"
+    networks:
+      - networkIot
   pgadmin:
     image: dpage/pgadmin4
     ports:
@@ -17,9 +27,10 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
-      - postgres
+      - postgres-auth
+      - postgres-iot
     networks:
-      - networkProduct
+      - networkIot
 networks:
-  networkProduct:
+  networkIot:
     driver: bridge

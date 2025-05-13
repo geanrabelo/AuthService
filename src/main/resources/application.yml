@@ -2,7 +2,10 @@ spring:
   application:
     name: AuthService
   datasource:
-
+    url: jdbc:postgresql://localhost:5432/users
+    username: postgres
+    password: postgres
+    driverClass: org.postgresql.Driver
 api:
   security:
-    secret: "secret"
+    secret: a-string-secret-at-least-32-characters

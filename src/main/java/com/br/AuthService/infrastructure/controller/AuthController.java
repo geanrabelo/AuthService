@@ -9,6 +9,7 @@ import com.br.AuthService.infrastructure.repositories.UserRepository;
 import com.br.AuthService.infrastructure.service.TokenService;
 import com.br.AuthService.infrastructure.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,13 +27,16 @@ public class AuthController {
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public AuthController(TokenService tokenService,
                           AuthenticationManager authenticationManager,
-                          UserRepository userRepository){
+                          UserRepository userRepository,
+                          KafkaTemplate<String, String> kafkaTemplate){
         this.tokenService = tokenService;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @PostMapping("/login")
@@ -43,6 +47,7 @@ public class AuthController {
 
         String token = tokenService.generateToken((User) authentication.getPrincipal());
 
+        //kafkaTemplate.send("auth", token);
         return ResponseEntity.ok(new TokenDTO(token));
     }
 

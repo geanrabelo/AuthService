@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "tb_user")
+@Entity
 @Table(name = "tb_user")
 @Data
 @AllArgsConstructor
@@ -24,9 +24,10 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    private String login;
     private String password;
 
+    @Enumerated(EnumType.STRING)
     private Roles roles;
 
     @Column(name = "created_at")
@@ -34,25 +35,27 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
-    public User(String username, String password, Roles roles){
-        this.username = username;
+    public User(String login, String password, Roles roles){
+        this.login = login;
         this.password = password;
         this.roles = roles;
+        this.createdAt = LocalDateTime.now();
+        this.enabled = true;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.roles == Roles.ADMIN) return List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("TECHNICIAN"), new SimpleGrantedAuthority("AUDITOR"));
+        if(this.roles == Roles.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_TECHNICIAN"), new SimpleGrantedAuthority("ROLE_AUDITOR"));
         else if (this.roles == Roles.TECHNICIAN) {
-            return List.of(new SimpleGrantedAuthority("TECHNICIAN"), new SimpleGrantedAuthority("AUDITOR"));
+            return List.of(new SimpleGrantedAuthority("ROLE_TECHNICIAN"), new SimpleGrantedAuthority("ROLE_AUDITOR"));
         }else {
-            return List.of(new SimpleGrantedAuthority("AUDITOR"));
+            return List.of(new SimpleGrantedAuthority("ROLE_AUDITOR"));
         }
     }
 
     @Override
     public String getUsername(){
-        return this.username;
+        return this.login;
     }
 
     @Override
@@ -62,16 +65,16 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 }
